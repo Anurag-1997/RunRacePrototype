@@ -1,0 +1,20 @@
+Design level of the RunRace Game
+
+We design this game using onion design method,Where onion has a layer with a similar concept we also design the game in layers.
+
+LAYERS
+
+1.Core Functionality/Player movement
+2.Attributes(Animations,UI,etc).
+3.Game MEchanincs (conditions,level design).
+
+Introduction : - this game is about player needs to compete with other runners where runners needs to jump from wall to wall,climb ropes,
+flip to jump highers and grab to swing.
+
+steps:
+
+1. Player needs to run,jump and flip to be in the race,to reach to the next level.
+2. Player needs to compete with 3 AI characters.
+3. Win condition :- Player can win the raceif he is the first person to reach the win area.
+4. Lose condition :- Player loses the race if he is the last person to reach the win area.
+5. Next Level Condition :- If player is among the three to reach the win area, player can go to the next level. 
