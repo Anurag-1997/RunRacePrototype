@@ -1,34 +1,60 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private CharacterController characterController;
-    private Vector3 motion;
-    public float speed = 5;
-
-    // Start is called before the first frame update
+    CharacterController characterController;
+    Vector3 playerMove;
+    [SerializeField] private float speed; //playerSpeed
+    public float playerJumpForce;
+    public float playerVelocity = 0;
+    public float gravity = 30f;
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+
     }
-    void Start()
+
+    private void Start()
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        motion = Vector3.zero;
+        playerMove = Vector3.zero;
+        playerMove = transform.forward;
+        if(characterController.isGrounded)
+        {
+            playerVelocity = 0;
+            Jump();
+        }
+        else
+        {
+            gravity = 30f;
+            playerVelocity -= gravity * Time.deltaTime;
+        }
+        playerMove.Normalize();
 
-        motion = transform.forward; //goes forward in player z direction
+        playerMove *= speed;
 
-        motion.Normalize();
+        playerMove.y = playerVelocity;
+        characterController.Move(playerMove * Time.deltaTime);
 
-        motion = motion * speed * Time.deltaTime;
-
-        characterController.Move(motion);
     }
+
+    private void Jump()
+    {
+        
+        if(Input.GetKeyDown(KeyCode.Space)||Input.GetMouseButtonDown(0))
+        {
+            print("Jumped!!!");
+            playerVelocity = playerJumpForce ;
+        }
+       
+
+    }
+        
 }
