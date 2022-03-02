@@ -13,8 +13,12 @@ public class PlayerController : MonoBehaviour
     public float gravity = 30f;
     private bool doubleJump;
     private bool wallSlide;
+    private bool playerTurn;
+
+    public Animator anim;
     private void Awake()
     {
+        anim = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
 
     }
@@ -30,29 +34,56 @@ public class PlayerController : MonoBehaviour
         playerMove = transform.forward;
         if(characterController.isGrounded)
         {
+            anim.SetBool("Grounded", characterController.isGrounded);
             wallSlide = false;
             playerVelocity = 0;
             Jump();
+            if(playerTurn)
+            {
+                playerTurn = false;
+                transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y + 180f, transform.eulerAngles.z);
+
+            }
+        }
+        if(!wallSlide)
+        {
+            //anim.SetBool("WallSlide", true);
+            print("Wall sliding");
+            gravity = 30f;
+            playerVelocity -= gravity * Time.deltaTime;
         }
         else
         {
-            gravity = 30f;
-            playerVelocity -= gravity * Time.deltaTime;
-            if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0) && doubleJump)
-            {
-                print("Jumped!!!");
-                playerVelocity += playerJumpForce * 0.5f;
-                doubleJump = false;
-                print("Double Jump");
-            }
-            
+            print("Wallsliding");
+            //gravity = 15f;
+            playerVelocity -= gravity * Time.deltaTime * 0.5f;
         }
+        anim.SetBool("Grounded", characterController.isGrounded);
+        anim.SetBool("WallSlide", wallSlide);
+        //else
+        //{
+        //    gravity = 30f;
+        //    playerVelocity -= gravity * Time.deltaTime;
+
+        //    //THIS LOGIC IS FOR DOUBLE JUMP,WE WILL ACTIVATE IF REQUIRED
+
+        //    //if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0) && doubleJump)
+        //    //{
+        //    //    print("Jumped!!!");
+        //    //    playerVelocity += playerJumpForce * 0.5f;
+        //    //    doubleJump = false;
+        //    //    print("Double Jump");
+        //    //}
+
+        //}
         playerMove.Normalize();
 
         playerMove *= speed;
 
         playerMove.y = playerVelocity;
         characterController.Move(playerMove * Time.deltaTime);
+
+
 
     }
 
@@ -61,10 +92,11 @@ public class PlayerController : MonoBehaviour
         
         if(Input.GetKeyDown(KeyCode.Space)||Input.GetMouseButtonDown(0))
         {
+            anim.SetTrigger("Jump");
             //wallSlide = false;
-            print("Jumped!!!");
+            //print("Jumped!!!");
             playerVelocity = playerJumpForce ;
-            doubleJump = true;
+            //doubleJump = true;
         }
        
 
@@ -78,10 +110,11 @@ public class PlayerController : MonoBehaviour
             {
                 if (playerVelocity < 0f) 
                 {
+                    anim.SetBool("WallSlide", true);
                     print("sliding");
                     wallSlide = true;
                 }
-                else if(Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
+                else if(Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) //need to fix the logic according to our game progress
                 {
                     //Jump();
                     playerVelocity = playerJumpForce;
@@ -90,6 +123,14 @@ public class PlayerController : MonoBehaviour
                     transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y + 180f, transform.eulerAngles.z);
                 }
                 
+            }
+        }
+        else
+        {
+            if (transform.forward != hit.collider.transform.right && hit.collider.tag == "Ground" && !playerTurn) 
+            {
+                playerTurn = true;
+                print("Player restricted from turning");
             }
         }
     }
